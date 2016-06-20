@@ -28,12 +28,14 @@ public class Main {
         
         if(validateParams(args)) {
             GraduationProgram graduationProgram = GraduationProgramController.getInstance().validateGraduationProgramName(args[0]);
+            Integer startYear = Integer.valueOf(args[1]);
+            Integer endYear = Integer.valueOf(args[2]);
             
             if(graduationProgram.getName() != null) {
                 List<Professor> professors = ProfessorController.getInstance().getProfessorsList(graduationProgram.getName());
                 
                 if(professors != null) {
-                    List<Resume> resumes = ResumeController.getInstance().getResumesList(professors);
+                    List<Resume> resumes = ResumeController.getInstance().getResumesList(professors, startYear, endYear);
                     
                     if(resumes != null && !resumes.isEmpty()) {
                         try(PrintWriter out = new PrintWriter(graduationProgram.getName() + ".txt")) {
