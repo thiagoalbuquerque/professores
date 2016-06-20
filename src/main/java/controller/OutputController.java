@@ -71,7 +71,7 @@ public class OutputController {
             String countYearsInProgressUndergraduateGuidance = String
                     .valueOf(resume.getYearsInProgressUndergraduateGuidance().size());
             
-            output += "Professor(a) " + resume.getProfessor().getName() + "\t"
+            output += resume.getProfessor().getName() + "\t"
                     + countA1JournalArticle + "\t"
                     + countA2JournalArticle + "\t"
                     + countB1JournalArticle + "\t"
@@ -97,7 +97,7 @@ public class OutputController {
                     + countYearsInProgressDoctoralGuidance + "\t"
                     + countYearsInProgressMastersGuidance + "\t"
                     + countYearsInProgressUndergraduateGuidance
-                    + "\n";
+                    + "\n\n";
         }
         
         return output;

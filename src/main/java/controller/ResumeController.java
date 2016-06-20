@@ -15,11 +15,11 @@ import model.ConferenceArticle;
 import model.JournalArticle;
 import model.Professor;
 import model.Resume;
-import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import utils.DeleteDirectory;
 import utils.Unzip;
 
 /**
@@ -58,7 +58,7 @@ public class ResumeController {
         
         //Delete temp directory with zip and curriculo.xml files
         File targetDir = new File(new File("temp-resumes").getAbsolutePath());
-        FileUtils.deleteDirectory(targetDir);
+        DeleteDirectory.deleteDirectory(targetDir);
         
         return resumeList;
     }
