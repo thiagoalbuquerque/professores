@@ -5,6 +5,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author victorspringer
@@ -12,6 +14,7 @@ package model;
 public class GraduationProgram {
     
     private String name;
+    private List<LineOfResearch> linesOfResearch;
     
     public String getName() {
         return name;
@@ -19,5 +22,13 @@ public class GraduationProgram {
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public List<LineOfResearch> getLinesOfResearch() {
+        return linesOfResearch;
+    }
+
+    public void setLinesOfResearch(List<LineOfResearch> linesOfResearch) {
+        this.linesOfResearch = linesOfResearch;
     }
 }

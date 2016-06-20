@@ -15,16 +15,16 @@ import java.util.Date;
  */
 public class YearValidator {
     
-    private static YearValidator yearValidatorInstance;
+    private static YearValidator YearValidatorInstance;
     
     public static synchronized YearValidator getInstance() {
-        if (yearValidatorInstance == null) {
-            yearValidatorInstance = new YearValidator();
+        if (YearValidatorInstance == null) {
+            YearValidatorInstance = new YearValidator();
         }
         
-        return yearValidatorInstance;
+        return YearValidatorInstance;
     }
-
+    
     public boolean validateYear(String yearToValidate) {
 
         if(yearToValidate != null){

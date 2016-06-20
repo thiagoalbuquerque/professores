@@ -6,8 +6,14 @@
 package app;
 
 import controller.GraduationProgramController;
+import controller.OutputController;
+import controller.ProfessorController;
+import controller.ResumeController;
 import java.io.PrintWriter;
+import java.util.List;
 import model.GraduationProgram;
+import model.Professor;
+import model.Resume;
 import utils.YearValidator;
 
 /**
@@ -24,9 +30,18 @@ public class Main {
             GraduationProgram graduationProgram = GraduationProgramController.getInstance().validateGraduationProgramName(args[0]);
             
             if(graduationProgram.getName() != null) {
-                try(PrintWriter out = new PrintWriter(args[0] + ".txt")) {
-                    out.println("Hello World!");
-                    out.close();
+                List<Professor> professors = ProfessorController.getInstance().getProfessorsList(graduationProgram.getName());
+                
+                if(professors != null) {
+                    List<Resume> resumes = ResumeController.getInstance().getResumesList(professors);
+                    
+                    if(resumes != null && !resumes.isEmpty()) {
+                        try(PrintWriter out = new PrintWriter(graduationProgram.getName() + ".txt")) {
+                            String output = OutputController.getInstance().writeOutput(resumes);
+                            out.println(output);
+                            out.close();
+                        }
+                    }
                 }
             }
             else {

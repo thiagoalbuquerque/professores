@@ -23,6 +23,7 @@ public class GraduationProgramController {
     private static GraduationProgramController graduationProgramControllerInstance;
     
     public static synchronized GraduationProgramController getInstance() {
+        
         if (graduationProgramControllerInstance == null) {
             graduationProgramControllerInstance = new GraduationProgramController();
         }
@@ -41,6 +42,11 @@ public class GraduationProgramController {
     }
     
     private String graduationProgramNameSearch(String name) throws Exception {
+        
+        return parseXML(name);
+    }
+    
+    private String parseXML(String name) throws Exception {
         
         URL url = new URL("https://s3.amazonaws.com/posgraduacao/programas.xml");
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
