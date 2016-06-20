@@ -6,6 +6,7 @@
 package controller;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,6 +142,8 @@ public class ResumeController {
     private void getConferenceArticles(List<ConferenceArticle> conferenceArticles, NodeList conferenceArticlesNodeList,
             Integer startYear, Integer endYear, Resume resume) throws Exception {
         
+        NodeList entryList = getQualisXML();
+        
         for(int i = 0; i < conferenceArticlesNodeList.getLength(); i++) {
             Node conferenceArticleNode = conferenceArticlesNodeList.item(i);
             
@@ -165,7 +168,7 @@ public class ResumeController {
 
                             conferenceArticle.setConferenceName(conferenceName);
                             conferenceArticle.setYear(year);
-                            conferenceArticle.setArticleLevel(getArticleLevel(conferenceName));
+                            conferenceArticle.setArticleLevel(getArticleLevel(conferenceName, entryList));
                             conferenceArticle.setResume(resume);
                             conferenceArticles.add(conferenceArticle);
                         }
@@ -177,6 +180,8 @@ public class ResumeController {
     
     private void getJournalArticles(List<JournalArticle> journalArticles, NodeList journalArticlesNodeList,
             Integer startYear, Integer endYear, Resume resume) throws Exception {
+        
+        NodeList entryList = getQualisXML();
         
         for(int i = 0; i < journalArticlesNodeList.getLength(); i++) {
             Node journalArticleNode = journalArticlesNodeList.item(i);
@@ -202,7 +207,7 @@ public class ResumeController {
 
                             journalArticle.setJournalName(journalName);
                             journalArticle.setYear(year);
-                            journalArticle.setArticleLevel(getArticleLevel(journalName));
+                            journalArticle.setArticleLevel(getArticleLevel(journalName, entryList));
                             journalArticle.setResume(resume);
                             journalArticles.add(journalArticle);
                         }
@@ -212,8 +217,7 @@ public class ResumeController {
         }
     }
     
-    private String getArticleLevel(String conferenceName) throws Exception {
-        
+    private NodeList getQualisXML() throws Exception {
         URL url = new URL("https://s3.amazonaws.com/posgraduacao/qualis.xml");
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -221,7 +225,11 @@ public class ResumeController {
         
         document.getDocumentElement().normalize();
         
-        NodeList entryList = document.getElementsByTagName("entry");
+        return document.getElementsByTagName("entry");
+    }
+    
+    private String getArticleLevel(String conferenceName, NodeList entryList) throws Exception {
+        
         for(int i = 0; i < entryList.getLength(); i++) {
             Node entry = entryList.item(i);
             
