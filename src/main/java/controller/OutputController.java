@@ -61,7 +61,7 @@ public class OutputController {
             Arrays.fill(totalLineOfResearchValues, 0);
                 
             for(Professor professor : lineOfResearch.getProfessors()) {
-                output.append(completeWithWhiteSpaces(professor.getName()));
+                output.append(firstColumnWidth(professor.getName()));
                 
                 getValues(professor, totalLineOfResearchJournalArticleLevels,
                         totalLineOfResearchConferenceArticleLevels, totalLineOfResearchYearsCount);
@@ -73,74 +73,66 @@ public class OutputController {
                 output.append("\n");
             }
             
-            output.append(completeWithWhiteSpaces("Total da Linha de Pesquisa '" + lineOfResearch.getName() + "'"));
+            output.append(firstColumnWidth("Total da Linha de Pesquisa '" + lineOfResearch.getName() + "'"));
             for(int i = 0; i < totalLineOfResearchValues.length; i++) {
-                output.append(totalLineOfResearchValues[i].toString());
-                if(i < totalLineOfResearchValues.length - 1) {
-                    output.append("\t\t\t");
-                }
-                else {
-                    output.append("\n\n");
-                }
-                
+                output.append(completeColumnWithWhiteSpaces(totalLineOfResearchValues[i].toString()));
                 totalValues[i] += totalLineOfResearchValues[i];
             }
+            
+            output.append("\n\n");
         }
         
-        output.append("Total do Programa '").append(graduationProgram.getName()).append("'\t\t\t");
+        output.append(firstColumnWidth("Total do Programa '" + graduationProgram.getName() + "'"));
         for(int i = 0; i < totalValues.length; i++) {
-            output.append(totalValues[i].toString());
-            if(i < totalLineOfResearchValues.length - 1) {
-                output.append("\t\t\t");
-            }
-            else {
-                output.append("\n");
-            }
+            output.append(completeColumnWithWhiteSpaces(totalValues[i].toString()));
         }
+        
+        output.append("\n");
         
         return output.toString();
     }
     
     private String getHeader() {
-        return completeWithWhiteSpaces("Professor")
-                + "Artigos Revistas A1\t"
-                + "Artigos Revistas A2\t"
-                + "Artigos Revistas B1\t"
-                + "Artigos Revistas B2\t"
-                + "Artigos Revistas B3\t"
-                + "Artigos Revistas B4\t"
-                + "Artigos Revistas C\t"
-                + "Artigos Revistas N/C\t"
-                + "Artigos Eventos A1\t"
-                + "Artigos Eventos A2\t"
-                + "Artigos Eventos B1\t"
-                + "Artigos Eventos B2\t"
-                + "Artigos Eventos B3\t"
-                + "Artigos Eventos B4\t"
-                + "Artigos Eventos C\t"
-                + "Artigos Eventos N/C\t"
-                + "Participação Banca de Doutorado\t"
-                + "Participação Banca de Mestrado\t"
-                + "Participação Banca de Graduação\t"
-                + "Orientação Doutorado Concluído\t"
-                + "Orientação Mestrado Concluído\t"
-                + "Orientação Graduação Concluída\t"
-                + "Orientação Doutorado Em Andamento\t"
-                + "Orientação Mestrado Em Andamento\t"
-                + "Orientação Graduação Em Andamento"
+        return firstColumnWidth("Professor")
+                + "Artigos Revistas A1 |  "
+                + "Artigos Revistas A2  | "
+                + " Artigos Revistas B1 | "
+                + "Artigos Revistas B2 |  "
+                + "Artigos Revistas B3  | "
+                + " Artigos Revistas B4 | "
+                + " Artigos Revistas C  | "
+                + "Artigos Revistas N/C | "
+                + " Artigos Eventos A1  | "
+                + " Artigos Eventos A2  | "
+                + " Artigos Eventos B1  | "
+                + " Artigos Eventos B2  | "
+                + "Artigos Eventos B3   | "
+                + " Artigos Eventos B4  | "
+                + " Artigos Eventos C  |  "
+                + "Artigos Eventos N/C  | "
+                + " Part. Banca Dout.  |  "
+                + " Part. Banca Mest.  |  "
+                + " Part. Banca Grad.  |  "
+                + "Ort. Dout. Concluído | "
+                + "Ort. Mest. Concluído | "
+                + "Ori. Grad. Concluída | "
+                + "Ori. Dout. Andamento | "
+                + "Ori. Mest. Andamento | "
+                + " Ori. Grad. Andamento  "
                 + "\n\n";
     }
     
-    private String completeWithWhiteSpaces(String word) {
+    private String firstColumnWidth(String string) {
         int totalLength = 75;
+        int stringLength = string.length();
 
-        if(word.length() < 75) {
-            for(int i = 0; i < totalLength - word.length(); i++) {
-                word += " ";
+        if(stringLength < totalLength) {
+            for(int i = 0; i < totalLength - stringLength; i++) {
+                string += " ";
             }
         }
 
-        return word;
+        return string;
     }
     
     private void getValues(Professor professor, Integer[] totalLineOfResearchJournalArticleLevels,
@@ -265,7 +257,7 @@ public class OutputController {
                 
         int end = 0;
         for(int i = 0; i < totalLineOfResearchJournalArticleLevels.length; i++) {
-            output.append(totalLineOfResearchJournalArticleLevels[i].toString()).append("\t\t\t");                    
+            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchJournalArticleLevels[i].toString()));                    
             totalLineOfResearchValues[i] += totalLineOfResearchJournalArticleLevels[i];
             end++;
         }
@@ -274,8 +266,8 @@ public class OutputController {
         end += totalLineOfResearchConferenceArticleLevels.length;
         int j = 0;
         for(int i = start; i < end; i++) {
-            output.append(totalLineOfResearchConferenceArticleLevels[j].toString()).append("\t\t\t");   
-            totalLineOfResearchValues[i] = totalLineOfResearchConferenceArticleLevels[j];
+            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchConferenceArticleLevels[j].toString()));   
+            totalLineOfResearchValues[i] += totalLineOfResearchConferenceArticleLevels[j];
             j++;
         }
 
@@ -283,12 +275,44 @@ public class OutputController {
         end += totalLineOfResearchYearsCount.length;
         j = 0;
         for(int i = start; i < end; i++) {
-            output.append(totalLineOfResearchYearsCount[j].toString());
-            if(i + 1 < end) {
-                output.append("\t\t\t");
-            }
-            totalLineOfResearchValues[i] = totalLineOfResearchYearsCount[j];
+            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchYearsCount[j].toString()));
+            totalLineOfResearchValues[i] += totalLineOfResearchYearsCount[j];
             j++;
         }
+    }
+
+    private String completeColumnWithWhiteSpaces(String string) {
+        
+        String whiteSpaces = "";
+        int times;
+        
+        switch(string.length()) {
+            case 1:
+                times = 11;
+                break;
+            case 2:
+                times = 10;
+                string += " ";
+                break;
+            case 3:
+                times = 10;
+                break;
+            case 4:
+                times = 9;
+                string += " ";
+                break;
+            case 5:
+                times = 9;
+                break;
+            default:
+                times = 0;
+                break;
+        }
+        
+        for(int i = 0; i < times; i++) {
+            whiteSpaces += " ";
+        }
+
+        return whiteSpaces + string + whiteSpaces;
     }
 }
