@@ -86,6 +86,7 @@ public class ProfessorController {
                         }
                     }
                     
+                    graduationProgram.setLinesOfResearch(lineOfResearchList);
                     lineOfResearch.setProfessors(professors);
                     lineOfResearchList.add(lineOfResearch);
                 }

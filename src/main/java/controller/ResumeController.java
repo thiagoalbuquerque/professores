@@ -6,7 +6,6 @@
 package controller;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,10 +89,10 @@ public class ResumeController {
         NodeList journalArticlesNodeList = document.getElementsByTagName("ARTIGO-PUBLICADO");
         NodeList yearsConcludedDoctoralGuidanceNodeList = document.getElementsByTagName("DADOS-BASICOS-DE-ORIENTACOES-CONCLUIDAS-PARA-DOUTORADO");
         NodeList yearsConcludedMastersGuidanceNodeList = document.getElementsByTagName("DADOS-BASICOS-DE-ORIENTACOES-CONCLUIDAS-PARA-MESTRADO");
-        NodeList yearsConcludedUndergraduateGuidanceNodeList = document.getElementsByTagName("OUTRAS-ORIENTACOES-CONCLUIDAS NATUREZA");
-        NodeList yearsInProgressDoctoralGuidanceNodeList = document.getElementsByTagName("ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO");
-        NodeList yearsInProgressMastersGuidanceNodeList = document.getElementsByTagName("ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO");
-        NodeList yearsInProgressUndergraduateGuidanceNodeList = document.getElementsByTagName("ORIENTACAO-EM-ANDAMENTO-DE-GRADUACAO");
+        NodeList yearsConcludedUndergraduateGuidanceNodeList = document.getElementsByTagName("OUTRAS-ORIENTACOES-CONCLUIDAS");
+        NodeList yearsInProgressDoctoralGuidanceNodeList = document.getElementsByTagName("DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-DOUTORADO");
+        NodeList yearsInProgressMastersGuidanceNodeList = document.getElementsByTagName("DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-MESTRADO");
+        NodeList yearsInProgressUndergraduateGuidanceNodeList = document.getElementsByTagName("DADOS-BASICOS-DA-ORIENTACAO-EM-ANDAMENTO-DE-GRADUACAO");
         NodeList yearsDoctoralBankingParticipationNodeList = document.getElementsByTagName("DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-DOUTORADO");
         NodeList yearsMastersBankingParticipationNodeList = document.getElementsByTagName("DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-MESTRADO");
         NodeList yearsUndergraduateBankingParticipationNodeList = document.getElementsByTagName("DADOS-BASICOS-DA-PARTICIPACAO-EM-BANCA-DE-GRADUACAO");
@@ -188,21 +187,25 @@ public class ResumeController {
             
             if (journalArticleNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element journalArticleElement = (Element) journalArticleNode;
-                NodeList nodeList = journalArticleElement.getElementsByTagName("DETALHAMENTO-DO-TRABALHO");
+                NodeList nodeList = journalArticleElement.getElementsByTagName("DADOS-BASICOS-DO-ARTIGO");
+                NodeList nodeDetailsList = journalArticleElement.getElementsByTagName("DETALHAMENTO-DO-ARTIGO");
 
                 for(int j = 0; j < nodeList.getLength(); j++) {
                     Node node = nodeList.item(j);
+                    Node nodeDetails = nodeDetailsList.item(j);
                     
                     if (node.getNodeType() == Node.ELEMENT_NODE) {
                         Element element = (Element) node;
                         
                         Integer year = null;
-                        if(!element.getAttribute("ANO-DE-REALIZACAO").isEmpty()) {
-                            year = Integer.valueOf(element.getAttribute("ANO-DE-REALIZACAO"));
+                        if(!element.getAttribute("ANO-DO-ARTIGO").isEmpty()) {
+                            year = Integer.valueOf(element.getAttribute("ANO-DO-ARTIGO"));
                         }
 
-                        if(year != null && year >= startYear && year <= endYear) {
-                            String journalName = element.getAttribute("NOME-DO-EVENTO");
+                        if(year != null && year >= startYear && year <= endYear && nodeDetails.getNodeType() == Node.ELEMENT_NODE) {
+                            Element elementDetails = (Element) nodeDetails;
+                            
+                            String journalName = elementDetails.getAttribute("TITULO-DO-PERIODICO-OU-REVISTA");
                             JournalArticle journalArticle = new JournalArticle();
 
                             journalArticle.setJournalName(journalName);
@@ -228,7 +231,7 @@ public class ResumeController {
         return document.getElementsByTagName("entry");
     }
     
-    private String getArticleLevel(String conferenceName, NodeList entryList) throws Exception {
+    private String getArticleLevel(String articleName, NodeList entryList) throws Exception {
         
         for(int i = 0; i < entryList.getLength(); i++) {
             Node entry = entryList.item(i);
@@ -236,13 +239,13 @@ public class ResumeController {
             if(entry.getNodeType() == Node.ELEMENT_NODE) {
                 Element entryElement = (Element) entry;
                 String regex = "(.*)" + entryElement.getAttribute("regex").toLowerCase() + "(.*)";
-                if(conferenceName.toLowerCase().matches(regex)) {
+                if(articleName.toLowerCase().matches(regex)) {
                     return entryElement.getAttribute("class");
                 }
             }
         }
         
-        System.out.println("Veículo '" + conferenceName + "' não identificado.");
+        System.out.println("Veículo '" + articleName + "' não identificado.");
         return "N/C";
     }
     
