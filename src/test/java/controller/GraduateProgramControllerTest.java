@@ -20,6 +20,7 @@ public class GraduateProgramControllerTest {
 
     /**
      * Tests if the object is found and if the returned name is the expected and uppercase
+     * @throws Exception 
      */
     @Test
     public void testValidateGraduateProgramName() throws Exception {

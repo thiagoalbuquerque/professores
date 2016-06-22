@@ -21,7 +21,8 @@ public class ResumeControllerTest {
     }
 
     /**
-     * Test of getResumesList method, of class ResumeController.
+     * Test of getResumesList method, of class ResumeController
+     * @throws Exception 
      */
     @Test
     public void testGetResumesList() throws Exception {

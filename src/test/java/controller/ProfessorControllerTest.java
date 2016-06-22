@@ -19,7 +19,8 @@ public class ProfessorControllerTest {
     public ProfessorControllerTest() {
     }
     /**
-     * Test of getProfessorsList method, of class ProfessorController.
+     * Test of getProfessorsList method, of class ProfessorController
+     * @throws Exception 
      */
     @Test
     public void testGetProfessorsList() throws Exception {

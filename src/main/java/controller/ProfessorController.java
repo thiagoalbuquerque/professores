@@ -56,11 +56,10 @@ public class ProfessorController {
     }
     
     /**
-     * 
+     * It also sets the line of research of each professor
      * @param graduateProgramName
      * @return Result list of professors of the XML parsing
      * @throws Exception 
-     * It also sets the line of research of each professor
      */
     private List<Professor> parseXML(String graduateProgramName) throws Exception {
         

@@ -14,6 +14,11 @@ import java.io.IOException;
  */
 public class DeleteDirectory {
     
+    /**
+     * 
+     * @param file
+     * @throws IOException 
+     */
     public static void deleteDirectory(File file) throws IOException {
  
     	if(file.isDirectory()) {

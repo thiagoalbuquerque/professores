@@ -189,14 +189,13 @@ public class ResumeController {
     }
     
     /**
-     * 
+     * Parse conference articles
      * @param conferenceArticles
      * @param conferenceArticlesNodeList
      * @param startYear
      * @param endYear
      * @param resume
      * @throws Exception 
-     * Parse conference articles
      */
     private void getConferenceArticles(List<ConferenceArticle> conferenceArticles, NodeList conferenceArticlesNodeList,
             Integer startYear, Integer endYear, Resume resume) throws Exception {
@@ -238,14 +237,13 @@ public class ResumeController {
     }
     
     /**
-     * 
+     * Parse journal articles
      * @param journalArticles
      * @param journalArticlesNodeList
      * @param startYear
      * @param endYear
      * @param resume
      * @throws Exception 
-     * Parse journal articles
      */
     private void getJournalArticles(List<JournalArticle> journalArticles, NodeList journalArticlesNodeList,
             Integer startYear, Integer endYear, Resume resume) throws Exception {
@@ -332,13 +330,12 @@ public class ResumeController {
     }
     
     /**
-     * 
+     * Gets the years of an academic participation type of a professor (this method is generic)
      * @param yearsList
      * @param nodeList
      * @param startYear
      * @param endYear
      * @throws Exception 
-     * Gets the years of an academic participation type of a professor (this method is generic)
      */
     private void getYears(List<Integer> yearsList, NodeList nodeList, Integer startYear,Integer endYear) throws Exception {
     
@@ -361,13 +358,12 @@ public class ResumeController {
     }
     
     /**
-     * 
+     * Gets the years of concluded undergraduate guidances of a professor 
      * @param yearsConcludedUndergraduateGuidance
      * @param yearsConcludedUndergraduateGuidanceNodeList
      * @param startYear
      * @param endYear
      * @throws Exception 
-     * Gets the years of concluded undergraduate guidances of a professor 
      */
     private void getYearsConcludedUndergraduateGuidance(List<Integer> yearsConcludedUndergraduateGuidance, NodeList yearsConcludedUndergraduateGuidanceNodeList, Integer startYear,Integer endYear) throws Exception {
     

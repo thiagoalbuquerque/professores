@@ -159,12 +159,11 @@ public class OutputController {
     }
     
     /**
-     * 
+     * Gets data of a professor
      * @param professor
      * @param totalLineOfResearchJournalArticleClassifications
      * @param totalLineOfResearchConferenceArticleClassifications
      * @param totalLineOfResearchYearsCount 
-     * Gets data of a professor
      */
     private void getValues(Professor professor, Integer[] totalLineOfResearchJournalArticleClassifications,
             Integer[] totalLineOfResearchConferenceArticleClassifications, Integer[] totalLineOfResearchYearsCount) {
@@ -313,13 +312,12 @@ public class OutputController {
     }
     
     /**
-     * 
+     * Fill all the columns of the output string
      * @param output
      * @param totalLineOfResearchJournalArticleClassifications
      * @param totalLineOfResearchConferenceArticleClassifications
      * @param totalLineOfResearchYearsCount
      * @param totalLineOfResearchValues 
-     * Fill all the columns of the output string
      */
     private void fillOutputColumns(StringBuilder output, Integer[] totalLineOfResearchJournalArticleClassifications,
             Integer[] totalLineOfResearchConferenceArticleClassifications, Integer[] totalLineOfResearchYearsCount,

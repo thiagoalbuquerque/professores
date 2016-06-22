@@ -24,7 +24,7 @@ import utils.YearValidator;
  */
 public class Main {
     /**
-     * 
+     * Main function of the system
      * @param args Graduate Program name, start year, end year
      * @throws Exception 
      */
@@ -35,26 +35,15 @@ public class Main {
             Integer startYear = Integer.valueOf(args[1]);
             Integer endYear = Integer.valueOf(args[2]);
             
-            if(graduateProgram.getName() != null) {
-                List<Professor> professors = ProfessorController.getInstance().getProfessorsList(graduateProgram.getName());
-                
-                if(professors != null) {
-                    List<Resume> resumes = ResumeController.getInstance().getResumesList(professors, startYear, endYear);
-                    
-                    if(resumes != null && !resumes.isEmpty()) {
-                        String output = OutputController.getInstance().writeOutput(resumes);
-                        
-                        if(output != null) {
-                            try(PrintWriter out = new PrintWriter(graduateProgram.getName() + ".txt")) {
-                                out.println(output);
-                                out.close();
-                            }
-                        }
-                    }
+            List<Professor> professors = ProfessorController.getInstance().getProfessorsList(graduateProgram.getName());
+            List<Resume> resumes = ResumeController.getInstance().getResumesList(professors, startYear, endYear);
+
+            String output = OutputController.getInstance().writeOutput(resumes);
+            if(output != null) {
+                try(PrintWriter out = new PrintWriter(graduateProgram.getName() + ".txt")) {
+                    out.println(output);
+                    out.close();
                 }
-            }
-            else {
-                System.out.println("Nome de programa de pós-graduação inválido!");
             }
         }
         else if(args == null) {

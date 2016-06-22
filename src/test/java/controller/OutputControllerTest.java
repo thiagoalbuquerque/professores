@@ -18,7 +18,7 @@ public class OutputControllerTest {
     }
     
     /**
-     * Test of writeOutput method, of class OutputController.
+     * Test of writeOutput method, of class OutputController
      */
     @Test
     public void testWriteOutput() {

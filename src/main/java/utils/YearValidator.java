@@ -17,6 +17,10 @@ public class YearValidator {
     
     private static YearValidator YearValidatorInstance;
     
+    /**
+     * 
+     * @return YearValidator instance
+     */
     public static synchronized YearValidator getInstance() {
         if (YearValidatorInstance == null) {
             YearValidatorInstance = new YearValidator();
@@ -25,6 +29,11 @@ public class YearValidator {
         return YearValidatorInstance;
     }
     
+    /**
+     * 
+     * @param yearToValidate
+     * @return True or false
+     */
     public boolean validateYear(String yearToValidate) {
 
         if(yearToValidate != null){
