@@ -365,19 +365,17 @@ public class ResumeController {
      * @param endYear
      * @throws Exception 
      */
-    private void getYearsConcludedUndergraduateGuidance(List<Integer> yearsConcludedUndergraduateGuidance, NodeList yearsConcludedUndergraduateGuidanceNodeList, Integer startYear,Integer endYear) throws Exception {
+    private void getYearsConcludedUndergraduateGuidance(List<Integer> yearsConcludedUndergraduateGuidance,
+            NodeList yearsConcludedUndergraduateGuidanceNodeList, Integer startYear,Integer endYear) throws Exception {
     
         for(int i = 0; i < yearsConcludedUndergraduateGuidanceNodeList.getLength(); i++) {
             Node yearConcludedUndergraduateGuidanceNode = yearsConcludedUndergraduateGuidanceNodeList.item(i);
             
             if(yearConcludedUndergraduateGuidanceNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element yearConcludedUndergraduateGuidanceElement = (Element) yearConcludedUndergraduateGuidanceNode;
-                
-                if(yearConcludedUndergraduateGuidanceElement.hasAttribute("TRABALHO_DE_CONCLUSAO_DE_CURSO_GRADUACAO")) {
-                    NodeList nodeList = yearConcludedUndergraduateGuidanceElement.getElementsByTagName("DADOS-BASICOS-DE-OUTRAS-ORIENTACOES-CONCLUIDAS");
-                
-                    getYears(yearsConcludedUndergraduateGuidance, nodeList, startYear, endYear);
-                }
+                NodeList nodeList = yearConcludedUndergraduateGuidanceElement.getElementsByTagName("DADOS-BASICOS-DE-OUTRAS-ORIENTACOES-CONCLUIDAS");
+
+                getYears(yearsConcludedUndergraduateGuidance, nodeList, startYear, endYear);
             }
         }
     }
