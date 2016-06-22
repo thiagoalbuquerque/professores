@@ -30,6 +30,10 @@ public class ResumeController {
     
     private static ResumeController resumeControllerInstance;
     
+    /**
+     * 
+     * @return ResumeController instance
+     */
     public static synchronized ResumeController getInstance() {
         
         if (resumeControllerInstance == null) {
@@ -39,9 +43,22 @@ public class ResumeController {
         return resumeControllerInstance;
     }
     
+    /**
+     * 
+     * @param professors
+     * @param startYear
+     * @param endYear
+     * @return List of resumes
+     * @throws Exception 
+     */
     public List<Resume> getResumesList(List<Professor> professors, Integer startYear, Integer endYear) throws Exception {
         
         List<Resume> resumeList = new ArrayList<Resume>();
+        
+        if(professors == null || startYear == null || endYear == null || startYear > endYear) {
+            System.out.println("Forneça a lista de professores, a data início e a data fim corretamente.");
+            return null;
+        }
         
         for(Professor professor : professors) {
             File zipFile = getUnpackedFile(professor);
@@ -49,7 +66,14 @@ public class ResumeController {
             if(zipFile != null) {
                 File resumeFile = new File(new File("temp-resumes/curriculo.xml").getAbsolutePath());
                 Resume resume = getSingleResume(resumeFile, startYear, endYear);
+                
+                if(resume == null) {
+                    System.out.println("Falha no download do arquivo.");
+                    return null;
+                }
+                
                 resume.setProfessor(professor);
+                resume.setGraduateProgram(professor.getLineOfResearch().getGraduateProgram());
                 professor.setResume(resume);
                 
                 resumeList.add(resume);
@@ -63,20 +87,46 @@ public class ResumeController {
         return resumeList;
     }
     
+    /**
+     * 
+     * @param professor
+     * @return XML file unpacked
+     * @throws Exception 
+     */
     private File getUnpackedFile(Professor professor) throws Exception {
         
-        String graduationProgramName = professor.getLineOfResearch().getGraduationProgram().getName();
-        URL url = new URL("https://s3.amazonaws.com/posgraduacao/" + graduationProgramName + "/" + professor.getId() + ".zip");
+        String graduateProgramName = professor.getLineOfResearch().getGraduateProgram().getName();
+        URL url = new URL("https://s3.amazonaws.com/posgraduacao/" + graduateProgramName + "/" + professor.getId() + ".zip");
         File targetDir = new File(new File("temp-resumes").getAbsolutePath());
         
         return Unzip.unpackArchive(url, targetDir);
     }
     
+    /**
+     * 
+     * @param resumeFile
+     * @param startYear
+     * @param endYear
+     * @return Single resume of the argument's file
+     * @throws Exception 
+     */
     private Resume getSingleResume(File resumeFile, Integer startYear, Integer endYear) throws Exception {
+        
+        if(resumeFile == null) {
+            return null;
+        }
         
         return parseXML(resumeFile, startYear, endYear);
     }
     
+    /**
+     * 
+     * @param resumeFile
+     * @param startYear
+     * @param endYear
+     * @return Resume object parsed from an XML file
+     * @throws Exception 
+     */
     private Resume parseXML(File resumeFile, Integer startYear, Integer endYear) throws Exception {
         
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -138,6 +188,16 @@ public class ResumeController {
         return resume;
     }
     
+    /**
+     * 
+     * @param conferenceArticles
+     * @param conferenceArticlesNodeList
+     * @param startYear
+     * @param endYear
+     * @param resume
+     * @throws Exception 
+     * Parse conference articles
+     */
     private void getConferenceArticles(List<ConferenceArticle> conferenceArticles, NodeList conferenceArticlesNodeList,
             Integer startYear, Integer endYear, Resume resume) throws Exception {
         
@@ -167,7 +227,7 @@ public class ResumeController {
 
                             conferenceArticle.setConferenceName(conferenceName);
                             conferenceArticle.setYear(year);
-                            conferenceArticle.setArticleLevel(getArticleLevel(conferenceName, entryList));
+                            conferenceArticle.setArticleClassification(getArticleClassification(conferenceName, entryList));
                             conferenceArticle.setResume(resume);
                             conferenceArticles.add(conferenceArticle);
                         }
@@ -177,6 +237,16 @@ public class ResumeController {
         }
     }
     
+    /**
+     * 
+     * @param journalArticles
+     * @param journalArticlesNodeList
+     * @param startYear
+     * @param endYear
+     * @param resume
+     * @throws Exception 
+     * Parse journal articles
+     */
     private void getJournalArticles(List<JournalArticle> journalArticles, NodeList journalArticlesNodeList,
             Integer startYear, Integer endYear, Resume resume) throws Exception {
         
@@ -210,7 +280,7 @@ public class ResumeController {
 
                             journalArticle.setJournalName(journalName);
                             journalArticle.setYear(year);
-                            journalArticle.setArticleLevel(getArticleLevel(journalName, entryList));
+                            journalArticle.setArticleClassification(getArticleClassification(journalName, entryList));
                             journalArticle.setResume(resume);
                             journalArticles.add(journalArticle);
                         }
@@ -220,6 +290,11 @@ public class ResumeController {
         }
     }
     
+    /**
+     * 
+     * @return Node of the qualis.xml file
+     * @throws Exception 
+     */
     private NodeList getQualisXML() throws Exception {
         URL url = new URL("https://s3.amazonaws.com/posgraduacao/qualis.xml");
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -231,7 +306,14 @@ public class ResumeController {
         return document.getElementsByTagName("entry");
     }
     
-    private String getArticleLevel(String articleName, NodeList entryList) throws Exception {
+    /**
+     * 
+     * @param articleName
+     * @param entryList
+     * @return Article classification
+     * @throws Exception 
+     */
+    private String getArticleClassification(String articleName, NodeList entryList) throws Exception {
         
         for(int i = 0; i < entryList.getLength(); i++) {
             Node entry = entryList.item(i);
@@ -249,6 +331,15 @@ public class ResumeController {
         return "N/C";
     }
     
+    /**
+     * 
+     * @param yearsList
+     * @param nodeList
+     * @param startYear
+     * @param endYear
+     * @throws Exception 
+     * Gets the years of an academic participation type of a professor (this method is generic)
+     */
     private void getYears(List<Integer> yearsList, NodeList nodeList, Integer startYear,Integer endYear) throws Exception {
     
         for(int i = 0; i < nodeList.getLength(); i++) {
@@ -269,6 +360,15 @@ public class ResumeController {
         }
     }
     
+    /**
+     * 
+     * @param yearsConcludedUndergraduateGuidance
+     * @param yearsConcludedUndergraduateGuidanceNodeList
+     * @param startYear
+     * @param endYear
+     * @throws Exception 
+     * Gets the years of concluded undergraduate guidances of a professor 
+     */
     private void getYearsConcludedUndergraduateGuidance(List<Integer> yearsConcludedUndergraduateGuidance, NodeList yearsConcludedUndergraduateGuidanceNodeList, Integer startYear,Integer endYear) throws Exception {
     
         for(int i = 0; i < yearsConcludedUndergraduateGuidanceNodeList.getLength(); i++) {

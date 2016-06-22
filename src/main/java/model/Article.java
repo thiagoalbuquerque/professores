@@ -12,7 +12,7 @@ package model;
 public class Article {
     
     private Integer year;
-    private String articleLevel;
+    private String articleClassification;
     private Resume resume;
 
     public Integer getYear() {
@@ -23,12 +23,12 @@ public class Article {
         this.year = year;
     }
     
-    public String getArticleLevel() {
-        return articleLevel;
+    public String getArticleClassification() {
+        return articleClassification;
     }
 
-    public void setArticleLevel(String articleLevel) {
-        this.articleLevel = articleLevel;
+    public void setArticleClassification(String articleClassification) {
+        this.articleClassification = articleClassification;
     }
 
     public Resume getResume() {

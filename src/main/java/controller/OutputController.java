@@ -8,7 +8,7 @@ package controller;
 import java.util.Arrays;
 import java.util.List;
 import model.ConferenceArticle;
-import model.GraduationProgram;
+import model.GraduateProgram;
 import model.JournalArticle;
 import model.LineOfResearch;
 import model.Professor;
@@ -22,6 +22,10 @@ public class OutputController {
     
     private static OutputController outputControllerInstance;
     
+    /**
+     * 
+     * @return OutputController instance
+     */
     public static synchronized OutputController getInstance() {
         
         if (outputControllerInstance == null) {
@@ -31,16 +35,26 @@ public class OutputController {
         return outputControllerInstance;
     }
     
+    /**
+     * 
+     * @param resumes
+     * @return Output string to be saved into a text file
+     */
     public String writeOutput(List<Resume> resumes) {
         
-        GraduationProgram graduationProgram = resumes.get(0).getProfessor().getLineOfResearch().getGraduationProgram();
-        List<LineOfResearch> lineOfResearchList = graduationProgram.getLinesOfResearch();
+        if(resumes == null) {
+            System.out.println("Forneça pelo menos um curriculo.");
+            return null;
+        }
         
-        Integer[] totalJournalArticleLevels = new Integer[8];
-        Integer[] totalLineOfResearchJournalArticleLevels = new Integer[8];
+        GraduateProgram graduateProgram = resumes.get(0).getGraduateProgram();
+        List<LineOfResearch> lineOfResearchList = graduateProgram.getLinesOfResearch();
         
-        Integer[] totalConferenceArticleLevels = new Integer[8];
-        Integer[] totalLineOfResearchConferenceArticleLevels = new Integer[8];
+        Integer[] totalJournalArticleClassifications = new Integer[8];
+        Integer[] totalLineOfResearchJournalArticleClassifications = new Integer[8];
+        
+        Integer[] totalConferenceArticleClassifications = new Integer[8];
+        Integer[] totalLineOfResearchConferenceArticleClassifications = new Integer[8];
         
         Integer[] totalYearsCount = new Integer[9];
         Integer[] totalLineOfResearchYearsCount = new Integer[9];
@@ -55,19 +69,19 @@ public class OutputController {
         
         for(LineOfResearch lineOfResearch : lineOfResearchList) {
             
-            Arrays.fill(totalJournalArticleLevels, 0);
-            Arrays.fill(totalConferenceArticleLevels, 0);
+            Arrays.fill(totalJournalArticleClassifications, 0);
+            Arrays.fill(totalConferenceArticleClassifications, 0);
             Arrays.fill(totalYearsCount, 0);
             Arrays.fill(totalLineOfResearchValues, 0);
                 
             for(Professor professor : lineOfResearch.getProfessors()) {
                 output.append(firstColumnWidth(professor.getName()));
                 
-                getValues(professor, totalLineOfResearchJournalArticleLevels,
-                        totalLineOfResearchConferenceArticleLevels, totalLineOfResearchYearsCount);
+                getValues(professor, totalLineOfResearchJournalArticleClassifications,
+                        totalLineOfResearchConferenceArticleClassifications, totalLineOfResearchYearsCount);
                 
-                fillOutputColumns(output, totalLineOfResearchJournalArticleLevels,
-                        totalLineOfResearchConferenceArticleLevels, totalLineOfResearchYearsCount,
+                fillOutputColumns(output, totalLineOfResearchJournalArticleClassifications,
+                        totalLineOfResearchConferenceArticleClassifications, totalLineOfResearchYearsCount,
                         totalLineOfResearchValues);
                 
                 output.append("\n");
@@ -82,7 +96,7 @@ public class OutputController {
             output.append("\n\n");
         }
         
-        output.append(firstColumnWidth("Total do Programa '" + graduationProgram.getName() + "'"));
+        output.append(firstColumnWidth("Total do Programa '" + graduateProgram.getName() + "'"));
         for(int i = 0; i < totalValues.length; i++) {
             output.append(completeColumnWithWhiteSpaces(totalValues[i].toString()));
         }
@@ -92,6 +106,10 @@ public class OutputController {
         return output.toString();
     }
     
+    /**
+     * 
+     * @return Header string for the output text file
+     */
     private String getHeader() {
         return firstColumnWidth("Professor")
                 + "Artigos Revistas A1 |  "
@@ -122,6 +140,11 @@ public class OutputController {
                 + "\n\n";
     }
     
+    /**
+     * 
+     * @param string
+     * @return String with 75 characters containing the agument filled with white spaces
+     */
     private String firstColumnWidth(String string) {
         int totalLength = 75;
         int stringLength = string.length();
@@ -135,17 +158,25 @@ public class OutputController {
         return string;
     }
     
-    private void getValues(Professor professor, Integer[] totalLineOfResearchJournalArticleLevels,
-            Integer[] totalLineOfResearchConferenceArticleLevels, Integer[] totalLineOfResearchYearsCount) {
+    /**
+     * 
+     * @param professor
+     * @param totalLineOfResearchJournalArticleClassifications
+     * @param totalLineOfResearchConferenceArticleClassifications
+     * @param totalLineOfResearchYearsCount 
+     * Gets data of a professor
+     */
+    private void getValues(Professor professor, Integer[] totalLineOfResearchJournalArticleClassifications,
+            Integer[] totalLineOfResearchConferenceArticleClassifications, Integer[] totalLineOfResearchYearsCount) {
         
         List<JournalArticle> journalArticles = professor.getResume().getJournalArticles();
-        for(int i = 0; i < totalLineOfResearchJournalArticleLevels.length; i++) {
-            totalLineOfResearchJournalArticleLevels[i] = getTotalLineOfResearchJournalArticleLevels(journalArticles, i);
+        for(int i = 0; i < totalLineOfResearchJournalArticleClassifications.length; i++) {
+            totalLineOfResearchJournalArticleClassifications[i] = getTotalLineOfResearchJournalArticleClassifications(journalArticles, i);
         }
 
         List<ConferenceArticle> conferenceArticles = professor.getResume().getConferenceArticles();
-        for(int i = 0; i < totalLineOfResearchConferenceArticleLevels.length; i++) {
-            totalLineOfResearchConferenceArticleLevels[i] = getTotalLineOfResearchConferenceArticleLevels(conferenceArticles, i);
+        for(int i = 0; i < totalLineOfResearchConferenceArticleClassifications.length; i++) {
+            totalLineOfResearchConferenceArticleClassifications[i] = getTotalLineOfResearchConferenceArticleClassifications(conferenceArticles, i);
         }
 
         for(int i = 0; i < totalLineOfResearchYearsCount.length; i++) {
@@ -153,59 +184,77 @@ public class OutputController {
         }
     }
     
-    private Integer getTotalLineOfResearchJournalArticleLevels(List<JournalArticle> journalArticles, int i) {
+    /**
+     * 
+     * @param journalArticles List of journal articles
+     * @param i Index of the article in the list
+     * @return Classification of the article
+     */
+    private Integer getTotalLineOfResearchJournalArticleClassifications(List<JournalArticle> journalArticles, int i) {
         
         switch(i) {
             case 0:
-                return countJournalArticleLevel("A1", journalArticles);
+                return countJournalArticleClassification("A1", journalArticles);
             case 1:
-                return countJournalArticleLevel("A2", journalArticles);
+                return countJournalArticleClassification("A2", journalArticles);
             case 2:
-                return countJournalArticleLevel("B1", journalArticles);
+                return countJournalArticleClassification("B1", journalArticles);
             case 3:
-                return countJournalArticleLevel("B2", journalArticles);
+                return countJournalArticleClassification("B2", journalArticles);
             case 4:
-                return countJournalArticleLevel("B3", journalArticles);
+                return countJournalArticleClassification("B3", journalArticles);
             case 5:
-                return countJournalArticleLevel("B4", journalArticles);
+                return countJournalArticleClassification("B4", journalArticles);
             case 6:
-                return countJournalArticleLevel("C", journalArticles);
+                return countJournalArticleClassification("C", journalArticles);
             case 7:
-                return countJournalArticleLevel("N/C", journalArticles);
+                return countJournalArticleClassification("N/C", journalArticles);
             default:
                 return 0;
         }
     }
     
-    private Integer getTotalLineOfResearchConferenceArticleLevels(List<ConferenceArticle> conferenceArticles, int i) {
+    /**
+     * 
+     * @param conferenceArticles List of conference articles
+     * @param i Index of the article in the list
+     * @return Classification of the article
+     */
+    private Integer getTotalLineOfResearchConferenceArticleClassifications(List<ConferenceArticle> conferenceArticles, int i) {
         
         switch(i) {
             case 0:
-                return countConferenceArticleLevel("A1", conferenceArticles);
+                return countConferenceArticleClassification("A1", conferenceArticles);
             case 1:
-                return countConferenceArticleLevel("A2", conferenceArticles);
+                return countConferenceArticleClassification("A2", conferenceArticles);
             case 2:
-                return countConferenceArticleLevel("B1", conferenceArticles);
+                return countConferenceArticleClassification("B1", conferenceArticles);
             case 3:
-                return countConferenceArticleLevel("B2", conferenceArticles);
+                return countConferenceArticleClassification("B2", conferenceArticles);
             case 4:
-                return countConferenceArticleLevel("B3", conferenceArticles);
+                return countConferenceArticleClassification("B3", conferenceArticles);
             case 5:
-                return countConferenceArticleLevel("B4", conferenceArticles);
+                return countConferenceArticleClassification("B4", conferenceArticles);
             case 6:
-                return countConferenceArticleLevel("C", conferenceArticles);
+                return countConferenceArticleClassification("C", conferenceArticles);
             case 7:
-                return countConferenceArticleLevel("N/C", conferenceArticles);
+                return countConferenceArticleClassification("N/C", conferenceArticles);
             default:
                 return 0;
         }
     }
     
-    private Integer countJournalArticleLevel(String level, List<JournalArticle> articleList) {
+    /**
+     * 
+     * @param classification
+     * @param articleList
+     * @return Quantity of journal articles of the list with the argument's classification
+     */
+    private Integer countJournalArticleClassification(String classification, List<JournalArticle> articleList) {
         
         Integer count = 0;
         for(JournalArticle article : articleList) {
-            if(article.getArticleLevel().equals(level)) {
+            if(article.getArticleClassification().equals(classification)) {
                 count++;
             }
         }
@@ -213,11 +262,17 @@ public class OutputController {
         return count;
     }
     
-    private Integer countConferenceArticleLevel(String level, List<ConferenceArticle> articleList) {
+    /**
+     * 
+     * @param classification
+     * @param articleList
+     * @return Quantity of journal articles of the list with the argument's classification
+     */
+    private Integer countConferenceArticleClassification(String classification, List<ConferenceArticle> articleList) {
         
         Integer count = 0;
         for(ConferenceArticle article : articleList) {
-            if(article.getArticleLevel().equals(level)) {
+            if(article.getArticleClassification().equals(classification)) {
                 count++;
             }
         }
@@ -225,6 +280,12 @@ public class OutputController {
         return count;
     }
     
+    /**
+     * 
+     * @param professor
+     * @param i Index of the type of participation of the professor
+     * @return Total of participations of the professor in the type determined by the index 
+     */
     private Integer getTotalLineOfResearchYearsCount(Professor professor, int i) {
         
         switch(i) {
@@ -251,27 +312,36 @@ public class OutputController {
         }
     }
     
-    private void fillOutputColumns(StringBuilder output, Integer[] totalLineOfResearchJournalArticleLevels,
-            Integer[] totalLineOfResearchConferenceArticleLevels, Integer[] totalLineOfResearchYearsCount,
+    /**
+     * 
+     * @param output
+     * @param totalLineOfResearchJournalArticleClassifications
+     * @param totalLineOfResearchConferenceArticleClassifications
+     * @param totalLineOfResearchYearsCount
+     * @param totalLineOfResearchValues 
+     * Fill all the columns of the output string
+     */
+    private void fillOutputColumns(StringBuilder output, Integer[] totalLineOfResearchJournalArticleClassifications,
+            Integer[] totalLineOfResearchConferenceArticleClassifications, Integer[] totalLineOfResearchYearsCount,
             Integer[] totalLineOfResearchValues) {
                 
         int end = 0;
-        for(int i = 0; i < totalLineOfResearchJournalArticleLevels.length; i++) {
-            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchJournalArticleLevels[i].toString()));                    
-            totalLineOfResearchValues[i] += totalLineOfResearchJournalArticleLevels[i];
+        for(int i = 0; i < totalLineOfResearchJournalArticleClassifications.length; i++) {
+            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchJournalArticleClassifications[i].toString()));                    
+            totalLineOfResearchValues[i] += totalLineOfResearchJournalArticleClassifications[i];
             end++;
         }
 
-        int start = totalLineOfResearchJournalArticleLevels.length;
-        end += totalLineOfResearchConferenceArticleLevels.length;
+        int start = totalLineOfResearchJournalArticleClassifications.length;
+        end += totalLineOfResearchConferenceArticleClassifications.length;
         int j = 0;
         for(int i = start; i < end; i++) {
-            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchConferenceArticleLevels[j].toString()));   
-            totalLineOfResearchValues[i] += totalLineOfResearchConferenceArticleLevels[j];
+            output.append(completeColumnWithWhiteSpaces(totalLineOfResearchConferenceArticleClassifications[j].toString()));   
+            totalLineOfResearchValues[i] += totalLineOfResearchConferenceArticleClassifications[j];
             j++;
         }
 
-        start += totalLineOfResearchConferenceArticleLevels.length;
+        start += totalLineOfResearchConferenceArticleClassifications.length;
         end += totalLineOfResearchYearsCount.length;
         j = 0;
         for(int i = start; i < end; i++) {
@@ -281,6 +351,11 @@ public class OutputController {
         }
     }
 
+    /**
+     * 
+     * @param string
+     * @return String with 23 characters containing the agument filled with white spaces
+     */
     private String completeColumnWithWhiteSpaces(String string) {
         
         String whiteSpaces = "";

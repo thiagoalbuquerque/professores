@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author victorspringer
  */
-public class GraduationProgram {
+public class GraduateProgram {
     
     private String name;
     private List<LineOfResearch> linesOfResearch;

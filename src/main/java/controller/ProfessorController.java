@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import model.GraduationProgram;
+import model.GraduateProgram;
 import model.LineOfResearch;
 import model.Professor;
 import org.w3c.dom.Document;
@@ -26,6 +26,10 @@ public class ProfessorController {
     
     private static ProfessorController professorControllerInstance;
     
+    /**
+     * 
+     * @return ProfessorController instance
+     */
     public static synchronized ProfessorController getInstance() {
         
         if (professorControllerInstance == null) {
@@ -35,20 +39,45 @@ public class ProfessorController {
         return professorControllerInstance;
     }
     
-    public List<Professor> getProfessorsList(String graduationProgramName) throws Exception {
+    /**
+     * 
+     * @param graduateProgramName
+     * @return List of professors
+     * @throws Exception 
+     */
+    public List<Professor> getProfessorsList(String graduateProgramName) throws Exception {
         
-        return parseXML(graduationProgramName);
+        if(graduateProgramName == null) {
+            System.out.println("Forneça o nome do programa de pós-graduação corretamente.");
+            return null;
+        }
+        
+        return parseXML(graduateProgramName.toUpperCase());
     }
     
-    private List<Professor> parseXML(String graduationProgramName) throws Exception {
+    /**
+     * 
+     * @param graduateProgramName
+     * @return Result list of professors of the XML parsing
+     * @throws Exception 
+     * It also sets the line of research of each professor
+     */
+    private List<Professor> parseXML(String graduateProgramName) throws Exception {
         
-        GraduationProgram graduationProgram = new GraduationProgram();
-        graduationProgram.setName(graduationProgramName);
+        GraduateProgram graduateProgram = new GraduateProgram();
+        graduateProgram.setName(graduateProgramName);
         
-        URL url = new URL("https://s3.amazonaws.com/posgraduacao/" + graduationProgramName + "/contents.xml");
+        URL url = new URL("https://s3.amazonaws.com/posgraduacao/" + graduateProgramName + "/contents.xml");
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document document = docBuilder.parse(url.openStream());
+        Document document;
+        try {
+            document = docBuilder.parse(url.openStream());
+        }
+        catch(Exception e) {
+            System.out.println("Forneça o nome do programa de pós-graduação corretamente.");
+            return null;
+        }
         
         document.getDocumentElement().normalize();
         
@@ -66,7 +95,7 @@ public class ProfessorController {
                     LineOfResearch lineOfResearch = new LineOfResearch();
                     
                     lineOfResearch.setName(lineOfResearchElement.getAttribute("nome"));
-                    lineOfResearch.setGraduationProgram(graduationProgram);
+                    lineOfResearch.setGraduateProgram(graduateProgram);
                     
                     NodeList professorsNode = lineOfResearchNode.getChildNodes();
                     List<Professor> professors = new ArrayList<Professor>();
@@ -86,7 +115,7 @@ public class ProfessorController {
                         }
                     }
                     
-                    graduationProgram.setLinesOfResearch(lineOfResearchList);
+                    graduateProgram.setLinesOfResearch(lineOfResearchList);
                     lineOfResearch.setProfessors(professors);
                     lineOfResearchList.add(lineOfResearch);
                 }
@@ -98,6 +127,11 @@ public class ProfessorController {
         return null;
     }
     
+    /**
+     * 
+     * @param linesOfResearch
+     * @return Complete list of professors of all lines of research of the current graduation program
+     */
     private List<Professor> mergeProfessorsList(List<LineOfResearch> linesOfResearch) {
         
         List<Professor> professors = new ArrayList<Professor>();

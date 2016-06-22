@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class Resume {
     
+    private GraduateProgram graduateProgram;
     private Professor professor;
     private List<ConferenceArticle> conferenceArticles;
     private List<JournalArticle> journalArticles;
@@ -26,6 +27,13 @@ public class Resume {
     private List<Integer> yearsMastersBankingParticipation;
     private List<Integer> yearsUndergraduateBankingParticipation;
     
+    public GraduateProgram getGraduateProgram() {
+        return graduateProgram;
+    }
+
+    public void setGraduateProgram(GraduateProgram graduateProgram) {
+        this.graduateProgram = graduateProgram;
+    }
     
     public Professor getProfessor() {
         return professor;

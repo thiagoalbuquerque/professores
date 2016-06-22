@@ -14,7 +14,7 @@ import java.util.List;
 public class LineOfResearch {
     
     private String name;
-    private GraduationProgram graduationProgram;
+    private GraduateProgram graduateProgram;
     private List<Professor> professors;
     
     public String getName() {
@@ -25,12 +25,12 @@ public class LineOfResearch {
         this.name = name;
     }
 
-    public GraduationProgram getGraduationProgram() {
-        return graduationProgram;
+    public GraduateProgram getGraduateProgram() {
+        return graduateProgram;
     }
 
-    public void setGraduationProgram(GraduationProgram graduationProgram) {
-        this.graduationProgram = graduationProgram;
+    public void setGraduateProgram(GraduateProgram graduateProgram) {
+        this.graduateProgram = graduateProgram;
     }
     
     public List<Professor> getProfessors() {

@@ -5,13 +5,13 @@
  */
 package app;
 
-import controller.GraduationProgramController;
+import controller.GraduateProgramController;
 import controller.OutputController;
 import controller.ProfessorController;
 import controller.ResumeController;
 import java.io.PrintWriter;
 import java.util.List;
-import model.GraduationProgram;
+import model.GraduateProgram;
 import model.Professor;
 import model.Resume;
 import utils.YearValidator;
@@ -23,35 +23,50 @@ import utils.YearValidator;
  * @author Victor Springer
  */
 public class Main {
-    
+    /**
+     * 
+     * @param args Graduate Program name, start year, end year
+     * @throws Exception 
+     */
     public static void main(String[] args) throws Exception {
         
-        if(validateParams(args)) {
-            GraduationProgram graduationProgram = GraduationProgramController.getInstance().validateGraduationProgramName(args[0]);
+        if(args != null && validateParams(args)) {
+            GraduateProgram graduateProgram = GraduateProgramController.getInstance().validateGraduateProgramName(args[0]);
             Integer startYear = Integer.valueOf(args[1]);
             Integer endYear = Integer.valueOf(args[2]);
             
-            if(graduationProgram.getName() != null) {
-                List<Professor> professors = ProfessorController.getInstance().getProfessorsList(graduationProgram.getName());
+            if(graduateProgram.getName() != null) {
+                List<Professor> professors = ProfessorController.getInstance().getProfessorsList(graduateProgram.getName());
                 
                 if(professors != null) {
                     List<Resume> resumes = ResumeController.getInstance().getResumesList(professors, startYear, endYear);
                     
                     if(resumes != null && !resumes.isEmpty()) {
-                        try(PrintWriter out = new PrintWriter(graduationProgram.getName() + ".txt")) {
-                            String output = OutputController.getInstance().writeOutput(resumes);
-                            out.println(output);
-                            out.close();
+                        String output = OutputController.getInstance().writeOutput(resumes);
+                        
+                        if(output != null) {
+                            try(PrintWriter out = new PrintWriter(graduateProgram.getName() + ".txt")) {
+                                out.println(output);
+                                out.close();
+                            }
                         }
                     }
                 }
             }
             else {
-                System.out.println("Nome de programa de graduação inválido!");
+                System.out.println("Nome de programa de pós-graduação inválido!");
             }
+        }
+        else if(args == null) {
+            System.out.println("Por favor, preencha os parâmetros!");
         }
     }
     
+    /**
+     * 
+     * @param args Main function arguments
+     * @return True or false
+     */
     private static Boolean validateParams(String[] args) {
         
         if(args.length == 3) {

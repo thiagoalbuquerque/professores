@@ -8,7 +8,7 @@ package controller;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import model.GraduationProgram;
+import model.GraduateProgram;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,34 +18,61 @@ import org.w3c.dom.NodeList;
  *
  * @author victorspringer
  */
-public class GraduationProgramController {
+public class GraduateProgramController {
     
-    private static GraduationProgramController graduationProgramControllerInstance;
+    private static GraduateProgramController graduateProgramControllerInstance;
     
-    public static synchronized GraduationProgramController getInstance() {
+    /**
+     * 
+     * @return GraduateProgramController instance
+     */
+    public static synchronized GraduateProgramController getInstance() {
         
-        if (graduationProgramControllerInstance == null) {
-            graduationProgramControllerInstance = new GraduationProgramController();
+        if (graduateProgramControllerInstance == null) {
+            graduateProgramControllerInstance = new GraduateProgramController();
         }
         
-        return graduationProgramControllerInstance;
+        return graduateProgramControllerInstance;
     }
     
-    public GraduationProgram validateGraduationProgramName(String name) throws Exception {
+    /**
+     * 
+     * @param name
+     * @return GraduateProgram object
+     * @throws Exception 
+     */
+    public GraduateProgram validateGraduateProgramName(String name) throws Exception {
         
-            GraduationProgram graduationProgram = new GraduationProgram();
-            String searchNameResult = graduationProgramNameSearch(name);
+            GraduateProgram graduateProgram = new GraduateProgram();
+            String searchNameResult = graduateProgramNameSearch(name);
             
-            graduationProgram.setName(searchNameResult);
+            graduateProgram.setName(searchNameResult);
             
-            return graduationProgram;
+            return graduateProgram;
     }
     
-    private String graduationProgramNameSearch(String name) throws Exception {
+    /**
+     * 
+     * @param name validateGraduateProgramName argument
+     * @return Result name from parseXML method
+     * @throws Exception 
+     */
+    private String graduateProgramNameSearch(String name) throws Exception {
+        
+        if(name == null) {
+            System.out.println("Forneça o nome do programa de pós-graduação corretamente.");
+            return null;
+        }
         
         return parseXML(name);
     }
     
+    /**
+     * 
+     * @param name graduateProgramNameSearch argument
+     * @return Result name of the XML parsing
+     * @throws Exception 
+     */
     private String parseXML(String name) throws Exception {
         
         URL url = new URL("https://s3.amazonaws.com/posgraduacao/programas.xml");
@@ -67,8 +94,8 @@ public class GraduationProgramController {
                 if (currentProgramNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element programElement = (Element) currentProgramNode;
 
-                    if(name.toLowerCase().equals(programElement.getAttribute("nome").toLowerCase())) {
-                        return name;
+                    if(name.toUpperCase().equals(programElement.getAttribute("nome").toUpperCase())) {
+                        return name.toUpperCase();
                     }
                 }
             }
