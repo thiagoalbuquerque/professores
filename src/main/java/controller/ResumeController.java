@@ -60,12 +60,14 @@ public class ResumeController {
             return null;
         }
         
+        NodeList entryList = getQualisXML();
+        
         for(Professor professor : professors) {
             File zipFile = getUnpackedFile(professor);
             
             if(zipFile != null) {
                 File resumeFile = new File(new File("temp-resumes/curriculo.xml").getAbsolutePath());
-                Resume resume = getSingleResume(resumeFile, startYear, endYear);
+                Resume resume = getSingleResume(resumeFile, startYear, endYear, entryList);
                 
                 if(resume == null) {
                     System.out.println("Falha no download do arquivo.");
@@ -85,6 +87,22 @@ public class ResumeController {
         DeleteDirectory.deleteDirectory(targetDir);
         
         return resumeList;
+    }
+    
+    /**
+     * 
+     * @return Node of the qualis.xml file
+     * @throws Exception 
+     */
+    private NodeList getQualisXML() throws Exception {
+        URL url = new URL("https://s3.amazonaws.com/posgraduacao/qualis.xml");
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        Document document = docBuilder.parse(url.openStream());
+        
+        document.getDocumentElement().normalize();
+        
+        return document.getElementsByTagName("entry");
     }
     
     /**
@@ -110,13 +128,13 @@ public class ResumeController {
      * @return Single resume of the argument's file
      * @throws Exception 
      */
-    private Resume getSingleResume(File resumeFile, Integer startYear, Integer endYear) throws Exception {
+    private Resume getSingleResume(File resumeFile, Integer startYear, Integer endYear, NodeList entryList) throws Exception {
         
         if(resumeFile == null) {
             return null;
         }
         
-        return parseXML(resumeFile, startYear, endYear);
+        return parseXML(resumeFile, startYear, endYear, entryList);
     }
     
     /**
@@ -127,7 +145,7 @@ public class ResumeController {
      * @return Resume object parsed from an XML file
      * @throws Exception 
      */
-    private Resume parseXML(File resumeFile, Integer startYear, Integer endYear) throws Exception {
+    private Resume parseXML(File resumeFile, Integer startYear, Integer endYear, NodeList entryList) throws Exception {
         
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -161,8 +179,8 @@ public class ResumeController {
         List<Integer> yearsMastersBankingParticipation = new ArrayList<Integer>();
         List<Integer> yearsUndergraduateBankingParticipation = new ArrayList<Integer>();
         
-        getConferenceArticles(conferenceArticles, conferenceArticlesNodeList, startYear, endYear, resume);
-        getJournalArticles(journalArticles, journalArticlesNodeList, startYear, endYear, resume);
+        getConferenceArticles(conferenceArticles, conferenceArticlesNodeList, startYear, endYear, resume, entryList);
+        getJournalArticles(journalArticles, journalArticlesNodeList, startYear, endYear, resume, entryList);
         getYears(yearsConcludedDoctoralGuidance, yearsConcludedDoctoralGuidanceNodeList, startYear, endYear);
         getYears(yearsConcludedMastersGuidance, yearsConcludedMastersGuidanceNodeList, startYear, endYear);
         getYearsConcludedUndergraduateGuidance(yearsConcludedUndergratuateGuidance, yearsConcludedUndergraduateGuidanceNodeList, startYear, endYear);
@@ -198,9 +216,7 @@ public class ResumeController {
      * @throws Exception 
      */
     private void getConferenceArticles(List<ConferenceArticle> conferenceArticles, NodeList conferenceArticlesNodeList,
-            Integer startYear, Integer endYear, Resume resume) throws Exception {
-        
-        NodeList entryList = getQualisXML();
+            Integer startYear, Integer endYear, Resume resume, NodeList entryList) throws Exception {
         
         for(int i = 0; i < conferenceArticlesNodeList.getLength(); i++) {
             Node conferenceArticleNode = conferenceArticlesNodeList.item(i);
@@ -246,10 +262,8 @@ public class ResumeController {
      * @throws Exception 
      */
     private void getJournalArticles(List<JournalArticle> journalArticles, NodeList journalArticlesNodeList,
-            Integer startYear, Integer endYear, Resume resume) throws Exception {
-        
-        NodeList entryList = getQualisXML();
-        
+            Integer startYear, Integer endYear, Resume resume, NodeList entryList) throws Exception {
+                
         for(int i = 0; i < journalArticlesNodeList.getLength(); i++) {
             Node journalArticleNode = journalArticlesNodeList.item(i);
             
@@ -286,22 +300,6 @@ public class ResumeController {
                 }
             }
         }
-    }
-    
-    /**
-     * 
-     * @return Node of the qualis.xml file
-     * @throws Exception 
-     */
-    private NodeList getQualisXML() throws Exception {
-        URL url = new URL("https://s3.amazonaws.com/posgraduacao/qualis.xml");
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document document = docBuilder.parse(url.openStream());
-        
-        document.getDocumentElement().normalize();
-        
-        return document.getElementsByTagName("entry");
     }
     
     /**
